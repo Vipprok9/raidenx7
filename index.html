@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>RaidenX7 · Trendy Web</title>
   <style>
     :root{--bg:#0f1115;--fg:#e7e7e7;--line:#252a31;--me:#2b87ff;--them:#2a2a2a}
@@ -11,7 +14,8 @@
     .toggle{position:absolute;right:12px;top:10px;cursor:pointer}
     .gallery{display:flex;gap:10px;overflow-x:auto;padding:12px;border-bottom:1px solid var(--line)}
     .gallery img{height:120px;border-radius:12px;object-fit:cover}
-    #chatbox{height:52vh;min-height:280px;padding:12px;overflow-y:auto}
+    #chatbox{height:52vh;min-height:280px;padding:12px;overflow-y:auto;position:relative}
+    #status{position:absolute;right:8px;top:8px;font-size:11px;opacity:.7}
     ul{list-style:none;padding:0;margin:0}
     li{display:flex;margin:6px 0}
     .me{justify-content:flex-end}
@@ -41,6 +45,7 @@
   </section>
 
   <section id="chatbox">
+    <div id="status">status: init…</div>
     <ul id="chat"></ul>
   </section>
 
@@ -51,23 +56,25 @@
 
   <footer>
     © RaidenX7 · Build on Cloudflare Pages × Render <br>
-    ⚡ Updated v0.2 – 29/09/2025
+    ⚡ Updated v0.4 (SSE + Poll 1s fallback)
   </footer>
 
   <script>
+    // === API_BASE trỏ vào backend Render ===
     const API_BASE = "https://raidenx7-bot.onrender.com";
 
     // Dark/Light
     const root = document.body;
     document.getElementById("themeToggle").onclick = ()=> root.classList.toggle("light");
 
-    // Chat elements
+    // Chat
     const chat = document.getElementById("chat");
     const input = document.getElementById("message");
     const form = document.getElementById("composer");
+    const statusEl = document.getElementById("status");
     const renderedIds = new Set();
-
     function scrollToBottom(){document.getElementById("chatbox").scrollTop=chat.scrollHeight}
+    function setStatus(s){statusEl.textContent = s;}
 
     function appendMessage({id,text,from="me",pending=false}){
       if(id && renderedIds.has(id)) return;
@@ -89,7 +96,7 @@
       if(meta){meta.textContent="đã gửi";setTimeout(()=>meta.textContent="",1000)}
     }
 
-    // Gửi: hiển thị ngay (optimistic)
+    // Gửi: hiển thị ngay
     form.addEventListener("submit",e=>{
       e.preventDefault();
       const text=input.value.trim();
@@ -103,7 +110,32 @@
       }).then(()=>markSent(tempId)).catch(()=>{});
     });
 
-    // Nhận: poll 1s + tránh cache
+    // SSE realtime + fallback poll 1s
+    let es;
+    function startSSE(){
+      try{
+        es = new EventSource(API_BASE + "/stream");
+        es.onopen  = () => setStatus("status: SSE connected");
+        es.onmessage = (e)=>{
+          try{
+            const m = JSON.parse(e.data);
+            if(!chat.querySelector(\`li[data-id="\${m.id}"]\`)){
+              appendMessage({id:m.id,text:m.text,from:m.from==="them"?"them":"me"});
+            }
+          }catch{}
+        };
+        es.onerror = ()=>{
+          setStatus("status: SSE error → fallback poll");
+          es && es.close();
+          startPoll();
+        };
+      }catch{
+        setStatus("status: SSE not supported → fallback poll");
+        startPoll();
+      }
+    }
+
+    let pollTimer=null;
     async function fetchEvents(){
       try{
         const res=await fetch(API_BASE+"/events?ts="+Date.now(),{
@@ -111,17 +143,26 @@
         });
         if(!res.ok) return;
         const data=await res.json();
-        if(!Array.isArray(data)) return;
-        data.forEach(m=>{
-          if(!chat.querySelector(\`li[data-id="\${m.id}"]\`)){
-            appendMessage({id:m.id,text:m.text,from:"them"});
-          }
-        });
-      }catch{}
+        if(Array.isArray(data)){
+          data.forEach(m=>{
+            if(!chat.querySelector(\`li[data-id="\${m.id}"]\`)){
+              appendMessage({id:m.id,text:m.text,from:"them"});
+            }
+          });
+        }
+        setStatus("status: polling 1s");
+      }catch{
+        setStatus("status: polling error");
+      }
     }
-    setInterval(fetchEvents,1000);
-    document.addEventListener("visibilitychange",()=>{if(!document.hidden) fetchEvents();});
-    fetchEvents();
+    function startPoll(){
+      if(pollTimer) return;
+      fetchEvents();
+      pollTimer = setInterval(fetchEvents, 1000);
+      document.addEventListener("visibilitychange",()=>{ if(!document.hidden) fetchEvents(); });
+    }
+
+    startSSE();
   </script>
 </body>
 </html>
