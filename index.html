@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RaidenX7 · Trendy Web</title>
+  <meta name="description" content="Trang demo RaidenX7: hero image + gallery + chat web ↔ Telegram (Render)." />
+  <style>
+    :root{ --bg:#0b0d12;--fg:#e6e6e6;--muted:#9aa3af;--card:#121520;--accent:#22d3ee;--border:#1f2433; --shadow:0 10px 30px rgba(0,0,0,.35);}
+    [data-theme="light"]{--bg:#f7f8fb;--fg:#0b0d12;--muted:#475569;--card:#ffffff;--accent:#2563eb;--border:#e5e7eb;--shadow:0 10px 30px rgba(2,6,23,.08)}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    a{color:var(--accent);text-decoration:none} .container{max-width:1000px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:10px} .brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#22d3ee,#818cf8);box-shadow:var(--shadow)}
+    h1{margin:0;font-weight:800;letter-spacing:.2px} .toggle{appearance:none;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--fg);padding:8px 12px;border-radius:12px}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-top:8px} .hero-card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+    .hero-card img{display:block;width:100%;height:100%;object-fit:cover} .hero-text{padding:18px} .hero-text h2{margin:6px 0 8px;font-size:28px} .hero-text p{color:var(--muted);margin:0 0 10px}
+    .cta-row{display:flex;gap:10px;flex-wrap:wrap} .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg)}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:white;border:0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px 0} .tile{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+    .tile img{width:100%;height:240px;object-fit:cover;display:block} .tile small{display:block;padding:10px;color:var(--muted)}
+    .chat{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+    .chat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px} .chat-box{height:260px;overflow:auto;border:1px dashed var(--border);border-radius:12px;padding:10px;background:rgba(0,0,0,.05)}
+    .msg{padding:8px 10px;margin:6px 0;border-radius:12px;border:1px solid var(--border);max-width:85%;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+    .me{background:linear-gradient(135deg,#4ade80, #22d3ee);color:#06242a;border:0;margin-left:auto} .bot{background:transparent} .sys{background:#111827;color:#d1d5db;border-color:#111827}
+    .muted{color:var(--muted);font-size:12px} .send{display:flex;gap:10px;margin-top:10px} .send input{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--fg)}
+    .send button{padding:12px 14px;border-radius:12px;border:0;background:var(--accent);color:white;font-weight:700} footer{opacity:.8;margin:24px 0 6px;text-align:center;color:var(--muted)}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.tile img{height:200px}} @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container" id="root">
+    <header>
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>RaidenX7 · Trendy Web</h1>
+          <div class="muted">Web ↔ Telegram (kết nối Render)</div>
+        </div>
+      </div>
+      <button id="toggle" class="toggle" title="Đổi theme">🌙/☀️</button>
+    </header>
+
+    <section class="hero">
+      <figure class="hero-card">
+        <img src="assets/hero-main.png" alt="Người cầm điện thoại - hero" />
+      </figure>
+      <div class="hero-text hero-card">
+        <h2>Chat 2 chiều mượt mà</h2>
+        <p>Frontend Cloudflare Pages, backend Flask trên Render. Gửi từ web sang Telegram và nhận về theo thời gian thực (SSE/polling fallback).</p>
+        <div class="cta-row">
+          <a class="btn primary" href="https://t.me/raidenx7_bot" target="_blank" rel="noreferrer">↗ Mở bot Telegram (RaidenX7)</a>
+          <a class="btn" href="https://raidenx7-bot.onrender.com/health" target="_blank" rel="noreferrer">Kiểm tra Render /health</a>
+        </div>
+        <div style="margin-top:10px" class="muted">Nhớ đặt đúng <code>API_BASE</code> và upload ảnh trong thư mục <code>assets/</code>.</div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="gallery-row-1">
+      <figure class="tile"><img src="assets/g1.png" alt="Gallery 1"/><small>Ảnh 1</small></figure>
+      <figure class="tile"><img src="assets/g2.png" alt="Gallery 2"/><small>Ảnh 2</small></figure>
+      <figure class="tile"><img src="assets/g3.jpg" alt="Gallery 3"/><small>Ảnh 3</small></figure>
+    </section>
+    <section class="tile" aria-label="gallery-row-2">
+      <img src="assets/g4-wide.png" alt="Gallery 4 rộng" style="height:300px;object-fit:cover;width:100%"/>
+      <small>Ảnh 4 (rộng)</small>
+    </section>
+
+    <section class="chat" aria-live="polite">
+      <div class="chat-head">
+        <strong>Chat Web ↔ Telegram</strong>
+        <span class="muted" id="status">Đang kết nối…</span>
+      </div>
+      <div id="chat-box" class="chat-box" role="log" aria-label="Tin nhắn"></div>
+      <div class="send">
+        <input id="input" placeholder="Nhập tin nhắn…" autocomplete="off" />
+        <button id="send">Gửi</button>
+      </div>
+    </section>
+
+    <footer>© RaidenX7 · Build on Cloudflare Pages × Render</footer>
+  </div>
+
+  <script>
+  const API_BASE = "https://raidenx7-bot.onrender.com";
+  const root = document.documentElement;
+  const savedTheme = localStorage.getItem("rx7-theme") || "dark";
+  if(savedTheme === "light") root.setAttribute("data-theme","light");
+  document.getElementById("toggle").onclick = () => { const isLight = root.getAttribute("data-theme") === "light"; root.setAttribute("data-theme", isLight ? "dark" : "light"); localStorage.setItem("rx7-theme", isLight ? "dark" : "light"); };
+
+  const chatBox = document.getElementById("chat-box");
+  const inputEl = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+  const statusEl = document.getElementById("status");
+  let lastTs = 0; let pollingTimer = null; let sse = null;
+
+  function render(messages){ const list = messages.filter(m => typeof m.ts === 'number').sort((a,b)=>a.ts-b.ts); const frag = document.createDocumentFragment(); for(const m of list){ if(m.ts <= lastTs) continue; const div = document.createElement('div'); div.className = 'msg ' + (m.text?.startsWith('Me:') ? 'me' : (m.text?.startsWith('Bot:') ? 'bot' : 'sys')); div.textContent = m.text || ''; frag.appendChild(div); lastTs = Math.max(lastTs, m.ts); } if(frag.childNodes.length){ chatBox.appendChild(frag); chatBox.scrollTop = chatBox.scrollHeight; }}
+
+  async function fetchOnce(){ try{ const res = await fetch(API_BASE + '/events', {headers:{'Accept':'application/json'}}); const data = await res.json(); render(data); statusEl.textContent = 'Đang cập nhật (polling)…'; }catch(e){ console.error('Fetch /events failed', e); statusEl.textContent = 'Lỗi kết nối /events'; } }
+  function startPolling(){ clearInterval(pollingTimer); pollingTimer = setInterval(fetchOnce, 2000); fetchOnce(); }
+  function startSSE(){ try{ sse = new EventSource(API_BASE + '/stream'); sse.onopen = () => statusEl.textContent = 'Đã kết nối realtime (SSE)'; sse.onerror = () => { statusEl.textContent = 'SSE lỗi → chuyển sang polling'; sse.close(); startPolling(); }; sse.onmessage = (ev) => { try{ const payload = JSON.parse(ev.data); render([payload]); } catch(e){ console.warn('SSE parse', e, ev.data); } }; }catch(err){ console.warn('SSE not supported or blocked, fallback polling'); startPolling(); } }
+  async function sendMessage(){ const text = inputEl.value.trim(); if(!text) return; sendBtn.disabled = true; try{ await fetch(API_BASE + '/send', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text }) }); inputEl.value=''; const ts = Date.now()/1000 + Math.random()/1000; render([{ text: 'Me: ' + text, ts }]); }catch(e){ console.error('Send failed', e); render([{ text: 'System: gửi thất bại', ts: Date.now()/1000 }]); }finally{ sendBtn.disabled = false; inputEl.focus(); } }
+  inputEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendMessage(); } });
+  sendBtn.addEventListener('click', sendMessage);
+  startSSE();
+  </script>
+</body>
+</html>
